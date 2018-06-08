@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-# Copyright P. Christeas <p_christ@hol.gr> 2008-2010
+# Copyright P. Christeas <xrg@hellug.gr> 2008-2017
 # Copyright 2010 OpenERP SA. http://www.openerp.com
 #
 # This program is Free Software; you can redistribute it and/or

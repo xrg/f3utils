@@ -14,7 +14,7 @@ setup(
     license='LGPLv3',
     platforms='Platform Independent',
     author="Panos Christeas",
-    author_email='xrg@openerp.com',
+    author_email='xrg@hellug.gr',
     url='http://git.hellug.gr/?p=xrg/openerp-libcli',
     download_url="http://git.hellug.gr/?p=xrg/openerp-libcli",
     packages=['openerp_libclient', 'openerp_libclient.extra'],
