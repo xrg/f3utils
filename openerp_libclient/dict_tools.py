@@ -16,8 +16,10 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ###############################################################################
 
-
 #.apidoc title: dict_tools - Helpers for dict() manipulations
+
+from copy import deepcopy
+
 
 def dict_merge(*dicts):
     """ Return a dict with all values of dicts
@@ -55,5 +57,35 @@ def dict_filter(srcdic, keys, res=None):
         if k in srcdic:
             res[k] = srcdic[k]
     return res
+
+
+def merge_dict(d1, d2, copy=True):
+    """Full (deep) merge of two dicts
+    
+        A newer implementation over `dict_merge2()` , ensuring that any
+        updated sub-containers are properly copied.
+    """
+    if copy:
+        d1 = deepcopy(d1)
+    
+    for k, v in d2.items():
+        if k in d1:
+            if v is None:
+                del d1[k]
+            elif isinstance(v, dict) and isinstance(d1[k], dict):
+                merge_dict(d1[k], v, copy=False)
+            elif isinstance(v, (list, tuple)):
+                if isinstance(d1[k], list):
+                    d1[k].extend(deepcopy(v))
+                elif isinstance(d1[k], tuple):
+                    d1[k] = d1[k] + tuple(deepcopy(v))
+                else:
+                    raise TypeError("Cannot merge list to %s" % type(d1[k]))
+            else:
+                d1[k] = deepcopy(v)
+        else:
+            d1[k] = deepcopy(v)
+
+    return d1
 
 #eof
