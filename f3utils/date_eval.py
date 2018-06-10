@@ -68,7 +68,7 @@ __out_fmt_fns = {'datetime': lambda dt: dt,
         'time_str': lambda dt: dt.strftime('%H:%M:%S'),
         }
 
-def date_eval(rstr):
+def date_eval(rstr, cur_time=None):
     """ Evaluate an textual representation of date/time into a datetime structure
     
         @param rstr the string representation
@@ -77,29 +77,31 @@ def date_eval(rstr):
         The representation is *strictly* in English.
 
         The parser is a loop that parses the expression left-to-right, manipulating
-        the computed timestamp at each step. So the order of sub-expressions
-        is important!
-
+        the computed timestamp at each step. So the order of sub-expressions is
+        important!
 
         Possible sub-expressions:
         
-        * Absolute (current clock):
-            - now : Current timestamp of the computer clock
-            - today : Midnight at current date: 02/03/2011 00:00:00
-            - tomorrow : Midnight at next date
-            - yesterday : Midnight of previous date
-        * Relative (to previous sub-expression): +/-Num<unit> where Num is a number
-          and unit can be one of:
-            - year(s)
-            - month(s)
-            - day(s)
-            - h[our(s)]
-            - m[inute(s)]
-            - s[ec[ond(s)]]
-        * Date/time : A partial or full date or time can be applied to specify
-          date and/or time:
-            - on DD[/MM[/YY]] : specify DD=day, MM=month or even YY=year
-            - at HH[:mm[:ss]] : specify HH=hour, mm=minute or even ss=seconds
+        :Absolute:
+            Currenct clock:
+              - now : Current timestamp of the computer clock
+              - today : Midnight at current date: 02/03/2011 00:00:00
+              - tomorrow : Midnight at next date
+              - yesterday : Midnight of previous date
+        :Relative (to previous sub-expression):
+            Like: ``+/-Num<unit>`` where Num is a number
+            and unit can be one of:
+              - year(s)
+              - month(s)
+              - day(s)
+              - h[our(s)]
+              - m[inute(s)]
+              - s[ec[ond(s)]]
+        :Date/time:
+            A partial or full date or time can be applied to specify
+            date and/or time:
+              - on ``DD[/MM[/YY]]`` : specify DD=day, MM=month or even YY=year
+              - at ``HH[:mm[:ss]]`` : specify HH=hour, mm=minute or even ss=seconds
 
         Examples::
 
@@ -108,7 +110,12 @@ def date_eval(rstr):
             on 15-04 at 13:45
             today +1year at 12:30
     """
-    cur_time = datetime.datetime.now()
+    if cur_time is None:
+        cur_time = datetime.datetime.now()
+    else:
+        if not isinstance(cur_time, datetime.datetime):
+            raise TypeError("current date must be given in datetime.datetime")
+
     for m in re_dateeval.finditer(rstr):
         if m.group('abs'):
             cur_time = re_abstimes[m.group('abs')]()
