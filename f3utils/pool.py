@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2004-2006 TINY SPRL. (http://tiny.be) All Rights Reserved.
 # Copyright (c) 2007-2010 Albert Cervera i Areny <albert@nan-tic.com>
-# Copyright (c) 2010,2012-2013 P. Christeas <xrg@linux.gr>
+# Copyright (c) 2010,2012-2018 P. Christeas <xrg@linux.gr>
 # Copyright (c) 2010 OpenERP (http://www.openerp.com )
 #
 # WARNING: This program as such is intended to be used by professional
