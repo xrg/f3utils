@@ -1,15 +1,15 @@
-%define git_repo python-openerp-libclient
+%define git_repo python-f3utils
 
 #define distsuffix xrg
 
 %{?!py_requires: %global py_requires(d) BuildRequires: python}
 %{?!py_sitedir: %global py_sitedir %(python -c 'import distutils.sysconfig; print distutils.sysconfig.get_python_lib()' 2>/dev/null || echo PYTHON-LIBDIR-NOT-FOUND)}
 
-Name:		python-openerp-libclient
-Summary:	Client Library for the OpenERP protocol
+Name:		python-f3-utils
+Summary:	Generic utilities from the F3 ERP suite
 Version:	%git_get_ver
 Release:	%mkrel %git_get_rel
-URL:		http://git.hellug.gr/?p=xrg/openerp-libcli
+# URL:		http://git.hellug.gr/?p=xrg/openerp-libcli
 Source0:	%git_bs_source %{name}-%{version}.tar.gz
 License:	LGPLv3
 BuildArch:	noarch
@@ -18,8 +18,10 @@ BuildRequires:	python
 %py_requires -d
 
 %description
-This library allows client applications connect and work 
-against an OpenERP server
+A handful of generic utilities unbundled from the F3/ERP suite. These
+had been inside the "openerp_libclient" package, but now extracted.
+
+
 
 %prep
 %git_get_source

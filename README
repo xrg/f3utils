@@ -1,4 +1,6 @@
-This repository contains a client library for the OpenERP server RPC protocol.
+Utilities from OpenERP/F3 suite. These are generic, individual, classes that
+may help any other project.
+
 
 License
 ---------

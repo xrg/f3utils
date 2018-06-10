@@ -2,25 +2,24 @@
 
 from distutils.core import setup
 
-name = 'openerp_libclient'
-version = '0.8'
+name = 'f3utils'
+version = '0.9'
 
 setup(
     name=name,
     version=version,
-    description='Client Library for the OpenERP protocol',
-    long_description="This library allows client applications connect and work "
-                    "against an OpenERP server.",
+    description='Utilities from the F3 ERP suite',
+    long_description="A handful of generic utilities",
     license='LGPLv3',
     platforms='Platform Independent',
     author="Panos Christeas",
-    author_email='xrg@hellug.gr',
-    url='http://git.hellug.gr/?p=xrg/openerp-libcli',
-    download_url="http://git.hellug.gr/?p=xrg/openerp-libcli",
-    packages=['openerp_libclient', 'openerp_libclient.extra'],
-    keywords=['xml-rpc', 'openerp', 'client', 'python',],
+    author_email='xrg@pefnos.com',
+    # url='http://git.hellug.gr/?p=xrg/openerp-libcli',
+    # download_url="http://git.hellug.gr/?p=xrg/openerp-libcli",
+    packages=['f3utils'],
+    keywords=['f3', 'python',],
     classifiers=[
-          'Development Status :: 1 - Experimental',
+          'Development Status :: 4 - Beta',
           'Environment :: Libraries',
           'Intended Audience :: Developers',
           'License :: OSI Approved :: LGPL v3',
