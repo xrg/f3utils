@@ -42,14 +42,11 @@ import optparse
 import sys, os
 import logging
 import logging.handlers
-import re
 
 opts = args = None
 config_stray_opts = []
 allow_include = 0 #: integer, 0 doesn't allow, or levels of include to permit
 
-connect_dsn = {'proto': 'http', 'user': 'admin', 'host': 'localhost', 'port': 8069,
-        'dbname': 'test'}
 
 log_section = 'libcli.options'
 
@@ -91,28 +88,6 @@ def _parse_option_section(conf, items, copt, opt, _allow_include=0):
             config_stray_opts.append((key, val))
             pass
 
-
-def _parse_url_dsn(url, connect_dsn):
-    import urlparse
-    netloc_re = re.compile( r'(?:(?P<user>[^:@]+?)(?:\:(?P<passwd>[^@]*?))?@)?'
-        r'(?P<host>(?:[\w\-\.]+)|(?:\[[0-9a-fA-F:]+\]))'
-        r'(?:\:(?P<port>[0-9]{1,5}))?$')
-    uparts = urlparse.urlparse(url, allow_fragments=False)
-
-    if uparts.scheme:
-        connect_dsn['proto'] = uparts.scheme
-    if uparts.netloc:
-        um = netloc_re.match(uparts.netloc)
-        if not um:
-            raise ValueError("Cannot decode net locator: %s" % uparts.netloc)
-        for k, v in um.groupdict().items():
-            if v is not None:
-                connect_dsn[k] = v
-    if uparts.query:
-        pass
-    if uparts.path and len(uparts.path) > 1:
-        connect_dsn['dbname'] = uparts.path.split('/')[1]
-    # path, params, fragment
 
 def init(usage=None, config=None, have_args=None, allow_askpass=True,
         options_prepare=None, defaults=None, config_section='general', post_conf=None):
@@ -182,8 +157,6 @@ def init(usage=None, config=None, have_args=None, allow_askpass=True,
         pgroup1.add_option("--ask-passwd", dest="ask_passwd", action="store_true", default=False,
                         help="Ask for passwords with an interactive prompt"),
 
-    pgroup1.add_option("-d", "--database", dest="dbname", help="specify the database name")
-
 
     pgroup2 = optparse.OptionGroup(parser, 'Config-File options',
                     " These options help run this script with pre-configured settings.")
@@ -245,10 +218,6 @@ def init(usage=None, config=None, have_args=None, allow_askpass=True,
         if getattr(opts, key, None):
             setattr(opts, key, os.path.expanduser(getattr(opts, key)))
 
-    # Then, analyze the URL
-    if opts.url:
-        _parse_url_dsn(opts.url, connect_dsn)
-
     # initialize logging
     log_kwargs = dict(level=logging.INFO)
     if opts.debug:
@@ -298,24 +267,10 @@ def init(usage=None, config=None, have_args=None, allow_askpass=True,
             _logger.error("Must supply %s args, %d given", have_args, len(args))
             sys.exit(1)
 
-    # Get the password
-    if opts.ask_passwd:
-        import getpass
-        connect_dsn['passwd'] = getpass.getpass("Enter the password for %s@%s: " % \
-            (connect_dsn['user'], connect_dsn['dbname']))
-    elif opts.passwd:
-        connect_dsn['passwd'] = opts.passwd
-    elif opts.passwd_file:
-        try:
-            fp = open(opts.passwd_file, 'rb')
-            connect_dsn['passwd'] = fp.readline().strip()
-            fp.close()
-            # file name is deliberately hidden
-            _logger.debug("Password read from file")
-        except Exception, e:
-            _logger.warning("Password file could not be read: %s", e)
-    
     if post_conf:
         post_conf(opts, args, cfgparser)
+
+    return opts, args
+
 
 #eof
