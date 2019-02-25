@@ -29,6 +29,7 @@
 #
 ##############################################################################
 
+from __future__ import absolute_import
 from threading import Condition
 import time
 
@@ -140,7 +141,7 @@ class Pool(object):
                 if self._limit and (count >= self._limit):
                     raise StopIteration()
 
-                ret = self.__iterc.next()
+                ret = next(self.__iterc)
                 if ret is not None and self._setter_fn:
                     self._setter_fn(ret, **kwargs)
 
@@ -241,7 +242,7 @@ class Pool(object):
         try:
             if self.__free_ones:
                 alz = time.time() - age
-                self.__free_ones = filter(lambda rt: rt[1] > alz, self.__free_ones)
+                self.__free_ones = [rt for rt in self.__free_ones if rt[1] > alz]
         finally:
             self.__lock.release()
 

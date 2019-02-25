@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    Copyright (c) 2010-2011 OpenERP (http://www.openerp.com)
-#    Copyright (c) 2011-2018 P. Christeas <xrg@pefnos.com>
+#    Copyright (c) 2011-2019 P. Christeas <xrg@pefnos.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Lesser General Public License as
@@ -19,6 +19,7 @@
 #
 ##############################################################################
 
+from __future__ import absolute_import
 import re
 # import time
 import datetime
@@ -140,14 +141,14 @@ def date_eval(rstr, cur_time=None):
         elif m.group('date_last'):
             cur_time = cur_time + relativedelta(day=31)
         elif m.group('date'):
-            dli = map(int, m.group('date').split('/'))
+            dli = [int(x) for x in m.group('date').split('/')]
             if len(dli) == 2:
                 dli += [cur_time.year,]
             elif len(dli) == 1:
                 dli += [cur_time.month, cur_time.year]
             cur_time = cur_time + relativedelta(day=dli[0], month=dli[1], year=dli[2])
         elif m.group('time'):
-            dli = map(int, m.group('time').split(':'))
+            dli = [int(x) for x in m.group('time').split(':')]
             if len(dli) == 2:
                 dli += [cur_time.second,]
             elif len(dli) == 1:
@@ -186,10 +187,10 @@ def lazy_date_eval(rstr, out_fmt='datetime'):
         elif m.group('date_last'):
             steps.append(('date_last', ()))
         elif m.group('date'):
-            dli = map(int, m.group('date').split('/'))
+            dli = [int(x) for x in m.group('date').split('/')]
             steps.append(('date', dli))
         elif m.group('time'):
-            dli = map(int, m.group('time').split(':'))
+            dli = [int(x) for x in m.group('time').split(':')]
             steps.append(('time', dli))
         else:
             pass

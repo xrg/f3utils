@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    Copyright 2011-2018 P. Christeas
-#    Author (blame me): P. Christeas <xrg@hellug.gr>
+#    Copyright 2011-2019 P. Christeas
+#    Author (blame me): P. Christeas <xrg@pefnos.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Lesser General Public License as
@@ -37,11 +37,13 @@
             spam(filename)
 """
 
-from ConfigParser import SafeConfigParser, NoSectionError
+from __future__ import absolute_import
+from six.moves.configparser import SafeConfigParser, NoSectionError
 import optparse
 import sys, os
 import logging
 import logging.handlers
+import six
 
 opts = args = None
 config_stray_opts = []
@@ -190,13 +192,13 @@ def init(usage=None, config=None, have_args=None, allow_askpass=True,
     if copt.have_config:
         if copt.configfile:
             cfiles = [copt.configfile,]
-        elif isinstance(config, basestring):
+        elif isinstance(config, six.string_types):
             cfiles = [config,]
         else:
             cfiles = config
 
         if cfiles:
-            cfiles = map(os.path.expanduser, cfiles)
+            cfiles = list(map(os.path.expanduser, cfiles))
             cfgparser = SafeConfigParser()
             conf_filesread = cfgparser.read(cfiles)
             try:

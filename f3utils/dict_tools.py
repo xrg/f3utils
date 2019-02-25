@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-# Copyright P. Christeas <xrg@hellug.gr> 2008-2017
+# Copyright P. Christeas <xrg@pefnos.com> 2008-2019
 # Copyright 2010 OpenERP SA. http://www.openerp.com
 #
 # This program is Free Software; you can redistribute it and/or
@@ -18,6 +18,7 @@
 
 #.apidoc title: dict_tools - Helpers for dict() manipulations
 
+from __future__ import absolute_import
 from copy import deepcopy
 
 

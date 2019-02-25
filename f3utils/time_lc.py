@@ -1,12 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 import locale
 
 import time
 import _strptime as _strptime_module
 from datetime import date as datetime_date
 import re
+import six
 
 #.apidoc skip: True
 
@@ -80,7 +82,7 @@ class LangSet(object):
                 format_regex = self._time_re.compile(fmt)
             # KeyError raised when a bad format is found; can be specified as
             # \\, in which case it was a stray % but with a space after it
-            except KeyError, err:
+            except KeyError as err:
                 bad_directive = err.args[0]
                 if bad_directive == "\\":
                     bad_directive = "%"
@@ -93,6 +95,7 @@ class LangSet(object):
             self._regex_cache[format] = format_regex
 
         return format_regex
+
 
 class C_LocaleTime(AbstractLocaleTime):
     def __init__(self):
@@ -108,11 +111,13 @@ class C_LocaleTime(AbstractLocaleTime):
         self.LC_time = '%H:%M:%S'
         self.LC_tznames = ('UTC', None)
 
+
 class C_LangSet(LangSet):
     def __init__(self):
         self.locale_time = C_LocaleTime()
         super(C_LangSet, self).__init__()
-        
+
+
 class Current_LangSet(LangSet):
     """ Take the language out of process'es locale
     """
@@ -120,6 +125,7 @@ class Current_LangSet(LangSet):
         self.locale_time = _strptime_module.LocaleTime()
         self.locale_time.LC_tznames = time.tzname
         super(Current_LangSet, self).__init__()
+
 
 class LangLoader(object):
     def __init__(self):
@@ -145,11 +151,12 @@ class LangLoader(object):
                 raise KeyError("Cannot use %s locale" % (lc,))
         return self._lc_cache[lc]
 
+
 lang_loader = LangLoader()
 
 def strptime(data_string, format="%a %b %d %H:%M:%S %Y", lang=None):
     """Return a time struct based on the input string and the format string."""
-    
+
     global lang_loader
     # This code has been copied from python's _strptime module.
     if lang is False:
@@ -157,7 +164,7 @@ def strptime(data_string, format="%a %b %d %H:%M:%S %Y", lang=None):
     elif lang is None:
         lang = locale.getlocale(locale.LC_TIME) or 'C'
 
-    if isinstance(lang, (basestring, tuple)):
+    if isinstance(lang, (six.string_types, tuple)):
         lang = lang_loader.loadLang(lang)
 
     locale_time = lang.locale_time
@@ -183,7 +190,7 @@ def strptime(data_string, format="%a %b %d %H:%M:%S %Y", lang=None):
     # values
     weekday = julian = -1
     found_dict = found.groupdict()
-    for group_key in found_dict.iterkeys():
+    for group_key in found_dict.keys():
         # Directives not explicitly handled below:
         #   c, x, X
         #      handled by making out of other directives
@@ -192,8 +199,8 @@ def strptime(data_string, format="%a %b %d %H:%M:%S %Y", lang=None):
         if group_key == 'y':
             year = int(found_dict['y'])
             # Open Group specification for strptime() states that a %y
-            #value in the range of [00, 68] is in the century 2000, while
-            #[69,99] is in the century 1900
+            # value in the range of [00, 68] is in the century 2000, while
+            # [69,99] is in the century 1900
             if year <= 68:
                 year += 2000
             else:
@@ -308,7 +315,7 @@ def strftime(format, t=None, lang=None):
     elif lang is None:
         lang = locale.getlocale(locale.LC_TIME) or 'C'
 
-    if isinstance(lang, (basestring, tuple)):
+    if isinstance(lang, (six.string_types, tuple)):
         lang = lang_loader.loadLang(lang)
 
     locale_time = lang.locale_time
@@ -317,15 +324,15 @@ def strftime(format, t=None, lang=None):
 
     def _srepl(mobj):
         f = mobj.group(1)
-        if f == "a":  #  Locale¢s abbreviated weekday name.
+        if f == "a":  #  Locale's abbreviated weekday name.
             return locale_time.a_weekday[t.tm_wday].title()
-        elif f == "A":  #  Locale¢s full weekday name.
+        elif f == "A":  #  Locale's full weekday name.
             return locale_time.f_weekday[t.tm_wday].title()
-        elif f == "b":  #  Locale¢s abbreviated month name.
+        elif f == "b":  #  Locale's abbreviated month name.
             return locale_time.a_month[t.tm_mon].title()
-        elif f == "B":  #  Locale¢s full month name.
+        elif f == "B":  #  Locale's full month name.
             return locale_time.f_month[t.tm_mon].title()
-        elif f == "c":  #  Locale¢s appropriate date and time representation.
+        elif f == "c":  #  Locale's appropriate date and time representation.
             return __strftime_regex.sub(_srepl, locale_time.LC_date_time)
         elif f == "d":  #  Day of the month as a decimal number [01,31].
             return '%02d' % t.tm_mday
@@ -339,7 +346,7 @@ def strftime(format, t=None, lang=None):
             return '%02d' % t.tm_mon
         elif f == "M":  #  Minute as a decimal number [00,59].
             return '%02d' % t.tm_min
-        elif f == "p":  #  Locale¢s equivalent of either AM or PM.
+        elif f == "p":  #  Locale's equivalent of either AM or PM.
             return locale_time.am_pm[int(t.tm_hour / 12)]
         elif f == "S":  #  Second as a decimal number [00,61].  (2)
             return '%02d' % t.tm_sec
@@ -353,9 +360,9 @@ def strftime(format, t=None, lang=None):
                         # as a decimal number [00,53]. All days in a new year preceding 
                         # the first Monday are considered to be in week 0.
             return '%02d' % ( (t.tm_yday + 6 - t.tm_wday) / 7)
-        elif f == "x":  #  Locale¢s appropriate date representation.
+        elif f == "x":  #  Locale's appropriate date representation.
             return __strftime_regex.sub(_srepl, locale_time.LC_date)
-        elif f == "X":  #  Locale¢s appropriate time representation.
+        elif f == "X":  #  Locale's appropriate time representation.
             return __strftime_regex.sub(_srepl, locale_time.LC_time)
         elif f == "y":  #  Year without century as a decimal number [00,99].
             return '%02d' % (t.tm_year % 100)

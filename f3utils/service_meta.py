@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP-f3, Open Source Management Solution
-#    Copyright (C) 2012-2018 P. Christeas <xrg@hellug.gr>
+#    Copyright (C) 2012-2019 P. Christeas <xrg@pefnos.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Lesser General Public License as
@@ -19,6 +19,7 @@
 #
 ##############################################################################
 
+from __future__ import absolute_import
 from abc import ABCMeta, abstractmethod
 
 #.apidoc title: Service Meta-class
@@ -214,7 +215,7 @@ class _ServiceMeta(ABCMeta):
         elif prefix:
             return [ k for k in svc_classes.keys() if k.startswith(prefix)]
         else:
-            return svc_classes.keys()
+            return list(svc_classes.keys())
 
     def __getitem__(cls, name):
         """ Access some class, through the name

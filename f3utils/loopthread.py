@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    Copyright 2011-2018 P. Christeas
-#    Author (blame me): P. Christeas <xrg@hellug.gr>
+#    Copyright 2011-2019 P. Christeas
+#    Author (blame me): P. Christeas <xrg@pefnos.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Lesser General Public License as
@@ -22,6 +22,7 @@
 
 #.apidoc title: Utility looping thread
 
+from __future__ import absolute_import
 import threading
 
 class LoopThread(threading.Thread):
