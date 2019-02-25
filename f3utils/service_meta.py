@@ -182,7 +182,13 @@ class _ServiceMeta(ABCMeta):
             # it shall never reach here, because _ServiceMeta ensures inheritance
             # from one base class...
             raise RuntimeError("No base service class for %s" % cls.__name__)
-        base_class = svc_classes.get(name, None)
+        if isinstance(name, (list, tuple)):
+            for n in name:
+                base_class = svc_classes.get(n, None)
+                if base_class is not None:
+                    break
+        else:
+            base_class = svc_classes.get(name, None)
         if base_class is None:
             raise TypeError("No service class with name: %s" % name)
         return base_class
