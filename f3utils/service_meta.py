@@ -155,8 +155,34 @@ class _ServiceMeta(ABCMeta):
                         nps.append(b)
                 bases = tuple(nps)
 
+                # magic class properties: prepend parents to lists, dicts, sets
+                namespace = namespace.copy()
+                for k in getattr(svc_base, '__service_lists'):
+                    if k in namespace:
+                        v = getattr(known_parent, k, None)
+                        if v is None:
+                            continue
+                        namespace[k] = v + namespace[k]
+                for k in getattr(svc_base, '__service_sets'):
+                    if k in namespace:
+                        v = getattr(known_parent, k, None)
+                        if v is None:
+                            continue
+                        namespace[k] = v.union(namespace[k])
+                for k in getattr(svc_base, '__service_dicts'):
+                    if k in namespace:
+                        v = getattr(known_parent, k, None)
+                        if v is None:
+                            continue
+                        v = v.copy()
+                        v.update(namespace[k])
+                        namespace[k] = v
         else:
             svc_classes = namespace['__service_classes'] = {}
+            namespace.setdefault('__service_dicts', {k for k,d in namespace.items() if isinstance(d, dict)})
+            namespace.setdefault('__service_lists', {k for k,d in namespace.items() if isinstance(d, list)})
+            namespace.setdefault('__service_sets', {k for k,d in namespace.items() if isinstance(d, set)})
+
         newcls = super(_ServiceMeta, mcls).__new__(mcls, name, bases, namespace)
         svc_classes[svc_name] = newcls
         return newcls
