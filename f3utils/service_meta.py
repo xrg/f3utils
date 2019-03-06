@@ -156,19 +156,19 @@ class _ServiceMeta(ABCMeta):
                 bases = tuple(nps)
 
                 # magic class properties: prepend parents to lists, dicts, sets
-                namespace = namespace.copy()
+                ns2 = {}
                 for k in getattr(svc_base, '__service_lists'):
                     if k in namespace:
                         v = getattr(known_parent, k, None)
                         if v is None:
                             continue
-                        namespace[k] = v + namespace[k]
+                        ns2[k] = v + namespace[k]
                 for k in getattr(svc_base, '__service_sets'):
                     if k in namespace:
                         v = getattr(known_parent, k, None)
                         if v is None:
                             continue
-                        namespace[k] = v.union(namespace[k])
+                        ns2[k] = v.union(namespace[k])
                 for k in getattr(svc_base, '__service_dicts'):
                     if k in namespace:
                         v = getattr(known_parent, k, None)
@@ -176,7 +176,10 @@ class _ServiceMeta(ABCMeta):
                             continue
                         v = v.copy()
                         v.update(namespace[k])
-                        namespace[k] = v
+                        ns2[k] = v
+                if ns2:
+                    namespace = namespace.copy()
+                    namespace.update(ns2)
         else:
             svc_classes = namespace['__service_classes'] = {}
             namespace.setdefault('__service_dicts', {k for k,d in namespace.items() if isinstance(d, dict)})
