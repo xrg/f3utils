@@ -182,9 +182,12 @@ class _ServiceMeta(ABCMeta):
                     namespace.update(ns2)
         else:
             svc_classes = namespace['__service_classes'] = {}
-            namespace.setdefault('__service_dicts', {k for k,d in namespace.items() if isinstance(d, dict)})
-            namespace.setdefault('__service_lists', {k for k,d in namespace.items() if isinstance(d, list)})
-            namespace.setdefault('__service_sets', {k for k,d in namespace.items() if isinstance(d, set)})
+            namespace.setdefault('__service_dicts', {k for k,d in namespace.items()
+                                                     if not k.startswith('__') and isinstance(d, dict)})
+            namespace.setdefault('__service_lists', {k for k,d in namespace.items() 
+                                                     if not k.startswith('__') and isinstance(d, list)})
+            namespace.setdefault('__service_sets', {k for k,d in namespace.items() 
+                                                    if not k.startswith('__') and isinstance(d, set)})
 
         newcls = super(_ServiceMeta, mcls).__new__(mcls, name, bases, namespace)
         svc_classes[svc_name] = newcls
