@@ -223,7 +223,7 @@ class _ServiceMeta(ABCMeta):
         else:
             base_class = svc_classes.get(name, None)
         if base_class is None:
-            raise TypeError("No service class with name: %s" % name)
+            raise TypeError("No %s class with name: %s" % (cls.__name__, name))
         return base_class
 
     def list_classes(cls, prefix=None):
