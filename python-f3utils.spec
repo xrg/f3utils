@@ -2,8 +2,8 @@
 
 #define distsuffix xrg
 
-%{?!py_requires: %global py_requires(d) BuildRequires: python}
-%{?!py_sitedir: %global py_sitedir %(python -c 'import distutils.sysconfig; print distutils.sysconfig.get_python_lib()' 2>/dev/null || echo PYTHON-LIBDIR-NOT-FOUND)}
+%{?!py_requires: %global py_requires(d) BuildRequires: python3}
+%{?!py_sitedir: %global py_sitedir %(python3 -c 'import distutils.sysconfig; print(distutils.sysconfig.get_python_lib())' 2>/dev/null || echo PYTHON-LIBDIR-NOT-FOUND)}
 
 Name:		python-f3-utils
 Summary:	Generic utilities from the F3 ERP suite
@@ -14,7 +14,7 @@ Source0:	%git_bs_source %{name}-%{version}.tar.gz
 License:	LGPLv3
 BuildArch:	noarch
 Group:		Libraries
-BuildRequires:	python
+BuildRequires:	python3
 %py_requires -d
 
 %description
