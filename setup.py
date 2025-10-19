@@ -3,7 +3,7 @@
 from setuptools import setup
 
 name = 'f3utils'
-version = '0.11'
+version = '1.01a'
 
 setup(
     name=name,
