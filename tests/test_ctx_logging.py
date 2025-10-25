@@ -4,7 +4,7 @@ import queue
 import unittest
 
 from contextvars import ContextVar, copy_context
-from f3utils.context_logging import AddLogContext
+from f3utils.context_logging import AddLogContext, MultiCtxHandler
 
 
 rovar = ContextVar('rovar')
@@ -45,6 +45,41 @@ class TestCtxLogging(unittest.TestCase):
         self.assertEqual(rec.msg, "with context")
         self.assertEqual(rec.rovar, "test_rovar")
         self.assertFalse(hasattr(rec, 'mehvar'))
+
+
+ctx_handler: ContextVar[logging.Handler] = ContextVar('ctx_handler')
+
+class TestMultiCtxLogging(unittest.TestCase):
+    logger = logging.getLogger("test.logging.context2")
+
+    def setUp(self):
+        self.logger.addHandler(MultiCtxHandler(ctx_handler))
+        self.logger.setLevel(logging.INFO)
+
+    def tearDown(self):
+        self.logger.handlers.clear()
+
+    def test_ten_jobs(self):
+
+        def _worker(num):
+            log = logging.getLogger("test.logging.context2.worker")
+            log.info("Test %s", num)
+
+        all_queues = {}
+        for i in range(10):
+            log_queue = queue.Queue()
+            h = logging.handlers.QueueHandler(log_queue)
+            h.setLevel(logging.INFO)
+
+            all_queues[i] = log_queue
+            ctx2 = copy_context()
+            ctx2.run(ctx_handler.set, h)
+            ctx2.run(_worker, i)
+
+        self.assertEqual(len(all_queues), 10)
+        for n, qq in all_queues.items():
+            rec = qq.get(block=False)
+            self.assertEqual(rec.msg, f"Test {n}")
 
 
 if __name__ == '__main__':

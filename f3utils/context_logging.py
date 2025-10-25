@@ -85,3 +85,38 @@ class AddLogContext(logging.Filter):
             pass
         return True
 
+
+class MultiCtxHandler(logging.Handler):
+    """Handler that redirects the LogRecord to another handler in context
+
+    Usage::
+
+        cur_logger: ContextVar[logging.Handler] = ContextVar('cur_logger')
+
+        hnd = MultiCtxHandler(cur_logger)
+
+        logging.getLogger("foo").addHandler(hnd)
+
+        ...
+        # somewhere deep inside the code:
+        logging.getLogger("foo.bar").info('Test test')
+
+    """
+
+    def __init__(self, ctxvar: contextvars.ContextVar[logging.Handler],
+                 level=logging.NOTSET):
+        super().__init__(level)
+        self._ctx_var = ctxvar
+
+    def createLock(self):
+        # override Handler, we don't want a lock here
+        self.lock = None
+
+    def emit(self, record: logging.LogRecord):
+        try:
+            cur_handler = self._ctx_var.get()
+        except LookupError:
+            return
+        cur_handler.handle(record)
+
+# eof
